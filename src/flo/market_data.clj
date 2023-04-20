@@ -16,6 +16,7 @@
 (def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/")
 (def query-tail-price "?modules=price")
 (def query-tail-statistics "?modules=defaultKeyStatistics")
+(def query-tail-all "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true")
 
 (defn get-yahoo-last-price [list-ticker]
   "Extract latest price from yahoo finance - used for FX and metals"
@@ -31,27 +32,42 @@
 
 (defn get-yahoo-snapshot-data [list-tickers]
   "Extract snapshot data from yahoo finance for a list of tickers...static data, key stats and last price"
-  (let [price-data (flatten
-                      (for [ticker list-tickers]
-                        (for [field static/list-field-price]
-                          (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) field)]
-                            (into {}
-                              {:ticker ticker
-                               (keyword field) (if (or (= field "shortName") (= field "currency"))
-                                                 results
-                                                 (get results "raw"))})))))
-        statistics-data (flatten
-                          (for [ticker list-tickers]
-                            (for [field static/list-field-statistics]
-                              (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-statistics))) ["quoteSummary" "result"])))) field)]
-                                (into {}
-                                      {:ticker ticker
-                                       (keyword field) (get results "raw")})))))
-        snapshot-data (let [data-grouped (group-by :ticker (concat price-data statistics-data))]
-                        (for [ticker list-tickers]
-                          (assoc (into {} (map #(second %) (data-grouped ticker))) :ticker ticker)))
+  (let [
+        ;price-data (flatten
+        ;              (for [ticker list-tickers]
+        ;                (for [field static/list-field-price]
+        ;                  (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) field)]
+        ;                    (into {}
+        ;                      {:ticker ticker
+        ;                       (keyword field) (if (or (= field "shortName") (= field "currency"))
+        ;                                         results
+        ;                                         (get results "raw"))})))))
+        ;statistics-data (flatten
+        ;                  (for [ticker list-tickers]
+        ;                    (for [field static/list-field-statistics]
+        ;                      (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-statistics))) ["quoteSummary" "result"])))) field)]
+        ;                        (into {}
+        ;                              {:ticker ticker
+        ;                               (keyword field) (get results "raw")})))))
+
+        snapshot-data-raw (flatten
+                            (for [ticker list-tickers]
+                              (let [raw-result (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-all))) ["quoteSummary" "result"])
+                                    result-clean (into {} (flatten (for [module raw-result] (vals module))))]
+                                (for [field static/list-field-snapshot]
+                                  (let [field-value (get result-clean field)]
+                                    (into {}
+                                          {:ticker ticker
+                                           (keyword field) (if (or (= field "shortName") (= field "currency"))
+                                                             field-value
+                                                             (get field-value "raw"))}))))))
+
+
+        snapshot-data-clean (let [data-grouped (group-by :ticker snapshot-data-raw)]
+                              (for [ticker list-tickers]
+                                (assoc (into {} (map #(second %) (data-grouped ticker))) :ticker ticker)))
         ]
-    snapshot-data
+    snapshot-data-clean
     )
   )
 
