@@ -1,12 +1,11 @@
-(ns flo.core)
+(ns flo.core
+  (:require [flo.market-data :as market-data]
+            [flo.positions :as positions]
+            [flo.static :as static]
+            )
+  )
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
-
-;dire au repl button quoi faire
-;instal only jdk
-;update lein profile with correct jdk
-;add cursive in intelij
-;set path and java home in envir variables
+(defn fx-data [] (market-data/get-yahoo-last-price static/list-fx))
+(defn metals-data [] (market-data/get-yahoo-last-price static/list-metals))
+(defn snapshot-data [] (market-data/get-yahoo-snapshot-data static/list-tickers))
+(defn price-history-data [] (market-data/get-yahoo-price-history "BP.L" "1d" "2023-04-01"))
