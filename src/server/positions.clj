@@ -17,3 +17,5 @@
         txt-final (map #(zipmap (map keyword (first txt-clean)) %) (rest txt-clean))
         ]
     txt-final ))
+
+

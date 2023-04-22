@@ -2,7 +2,7 @@
   (:require
     [server.static :as static]
     [cheshire.core :as cheshire]
-            )
+    )
   )
 ;(:import java.time.LocalDate)
 ;(LocalDate/parse "2019-01-01")
@@ -24,7 +24,7 @@
                   (for [ticker list-ticker]
                     (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")]
                       (into {}
-                          {:ticker ticker :fx (get results "raw")}))))
+                            {:ticker ticker :fx (get results "raw")}))))
         ]
     fx-data
     )
@@ -56,16 +56,16 @@
 
 (defn get-yahoo-price-history [ticker period start-date]
   "Get historical price data from Yahoo finance for a given ticker - period is one of 1m, 5m, 15m, 30m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo - start-date format is YYYY-MM-DD "
- (let [list-field ["date" "open" "high" "low" "close" "adj-close" "volume"]
-       start-date-unix (int (/ (.getTime (read-string (str "#inst \"" start-date "\"" ))) 1000)) ;(.getTime #inst"1988-07-04T00:00:00.000-00:00")
-       end-date-unix (int (/ (.getTime (java.util.Date.)) 1000))
-       query-head "https://query1.finance.yahoo.com/v7/finance/download/"
-       query-tail (str "?period1=" start-date-unix "&period2=" end-date-unix "&interval=" period "&events=history")
-       raw-results (slurp (str query-head ticker query-tail))
-       clean-results (for [line (clojure.string/split-lines raw-results)] (for [word (clojure.string/split line #",")] (clojure.string/trim word)))
-       historical-price-data (map #(zipmap (map keyword list-field) %) (rest clean-results)) ;instead of list field we can use keyword of first results with fct below  ;;;;;;;;;;; (clojure.string/join "" (filter #(not (clojure.string/blank? %)) (clojure.string/split " AAAA TTT " #" "))) ;;;;;;;;;;
-       ]
-   historical-price-data))
+  (let [list-field ["date" "open" "high" "low" "close" "adj-close" "volume"]
+        start-date-unix (int (/ (.getTime (read-string (str "#inst \"" start-date "\"" ))) 1000)) ;(.getTime #inst"1988-07-04T00:00:00.000-00:00")
+        end-date-unix (int (/ (.getTime (java.util.Date.)) 1000))
+        query-head "https://query1.finance.yahoo.com/v7/finance/download/"
+        query-tail (str "?period1=" start-date-unix "&period2=" end-date-unix "&interval=" period "&events=history")
+        raw-results (slurp (str query-head ticker query-tail))
+        clean-results (for [line (clojure.string/split-lines raw-results)] (for [word (clojure.string/split line #",")] (clojure.string/trim word)))
+        historical-price-data (map #(zipmap (map keyword list-field) %) (rest clean-results)) ;instead of list field we can use keyword of first results with fct below  ;;;;;;;;;;; (clojure.string/join "" (filter #(not (clojure.string/blank? %)) (clojure.string/split " AAAA TTT " #" "))) ;;;;;;;;;;
+        ]
+    historical-price-data))
 
 (defn get-fred-macro-data []
   "Get economic data from FRED API"
