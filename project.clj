@@ -9,4 +9,4 @@
                  [cheshire "5.11.0"]                        ; for JSON read
 
                  ]
-  :repl-options {:init-ns kdlytics.core})
+  :repl-options {:init-ns server.core})

@@ -1,4 +1,4 @@
-(ns server.market-data
+(ns server.marketdata
   (:require
     [server.static :as static]
     [cheshire.core :as cheshire]
@@ -14,9 +14,9 @@
 ;can be used slurp for text file, mayve csv ?
 
 (def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/")
+(def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true")
 (def query-tail-price "?modules=price")
-(def query-tail-statistics "?modules=defaultKeyStatistics")
-(def query-tail-all "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true")
+
 
 (defn get-yahoo-last-price [list-ticker]
   "Extract latest price from yahoo finance - used for FX and metals"
@@ -32,27 +32,9 @@
 
 (defn get-yahoo-snapshot-data [list-tickers]
   "Extract snapshot data from yahoo finance for a list of tickers...static data, key stats and last price"
-  (let [
-        ;price-data (flatten
-        ;              (for [ticker list-tickers]
-        ;                (for [field static/list-field-price]
-        ;                  (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) field)]
-        ;                    (into {}
-        ;                      {:ticker ticker
-        ;                       (keyword field) (if (or (= field "shortName") (= field "currency"))
-        ;                                         results
-        ;                                         (get results "raw"))})))))
-        ;statistics-data (flatten
-        ;                  (for [ticker list-tickers]
-        ;                    (for [field static/list-field-statistics]
-        ;                      (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-statistics))) ["quoteSummary" "result"])))) field)]
-        ;                        (into {}
-        ;                              {:ticker ticker
-        ;                               (keyword field) (get results "raw")})))))
-
-        snapshot-data-raw (flatten
+  (let [snapshot-data-raw (flatten
                             (for [ticker list-tickers]
-                              (let [raw-result (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-all))) ["quoteSummary" "result"])
+                              (let [raw-result (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-snapshot))) ["quoteSummary" "result"])
                                     result-clean (into {} (flatten (for [module raw-result] (vals module))))]
                                 (for [field static/list-field-snapshot]
                                   (let [field-value (get result-clean field)]
@@ -85,9 +67,9 @@
        ]
    historical-price-data))
 
-
-
-
+(defn get-fred-macro-data []
+  "Get economic data from FRED API"
+  )
 
 
 
