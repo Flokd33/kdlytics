@@ -1,7 +1,7 @@
-(ns flo.core
-  (:require [flo.market-data :as market-data]
-            [flo.positions :as positions]
-            [flo.static :as static]
+(ns server.core
+  (:require [server.market-data :as market-data]
+            [server.positions :as positions]
+            [server.static :as static]
             )
   )
 

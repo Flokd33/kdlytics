@@ -1,6 +1,6 @@
-(ns flo.market-data
+(ns server.market-data
   (:require
-    [flo.static :as static]
+    [server.static :as static]
     [cheshire.core :as cheshire]
             )
   )

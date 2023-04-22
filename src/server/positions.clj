@@ -1,4 +1,4 @@
-(ns flo.positions)
+(ns server.positions)
 
 
 ;(def raw-positions (slurp "C://Users/flori/positions.csv"))

@@ -1,6 +1,6 @@
-(ns flo.core-test
+(ns server.core-test
   (:require [clojure.test :refer :all]
-            [flo.core :refer :all]))
+            [server.core :refer :all]))
 
 (deftest a-test
   (testing "FIXME, I fail."

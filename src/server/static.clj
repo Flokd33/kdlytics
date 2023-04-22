@@ -1,4 +1,4 @@
-(ns flo.static)
+(ns server.static)
 
 
 (def list-tickers ["RIO.L" "BP.L" "GLEN.L" "AAL.L" "LGEN.L" "MC.PA" "TTE.PA" "ORA.PA" "RUI.PA" "STMPA.PA"])
