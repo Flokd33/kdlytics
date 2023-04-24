@@ -8,5 +8,7 @@
                  [clj-http "3.12.3"]                        ; for http request, use slurp for simple get, this for post request
                  [cheshire "5.11.0"]                        ; for JSON read
 
+                 [http-kit "2.1.18"]                         ;webscraping NOOO NEED
+                 [enlive "1.1.6"]                           ;webscraping
                  ]
   :repl-options {:init-ns server.core})
