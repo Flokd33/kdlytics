@@ -8,6 +8,4 @@
 (defn get-dom
   []
   (html/html-snippet
-    (:body (http/get "https://www.sharpspixley.com/"))
-    )
-  )
+    (:body (http/get "https://www.sharpspixley.com/"))))

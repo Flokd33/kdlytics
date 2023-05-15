@@ -11,7 +11,6 @@
 ;certainly the best and easiest way to get prices and basic stats but not for fundamental/valuation metrics
 ;https://github.com/dakrone/clj-http
 ;(slurp) will return the html content of a http.. basically the body of the http/get answer
-;can be used slurp for text file, mayve csv ?
 
 (def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/")
 (def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true")
