@@ -18,7 +18,7 @@
                       (group-by :ticker))
         positions-with-market-data (for [p raw-positions] (merge p (first (yahoo-snapshot-data (:ticker p)))))
         positions-clean (->>  positions-with-market-data
-                              (map #(assoc % :quantity (read-string (:qty %))))
+                              (map #(assoc % :quantity (read-string (:quantity %))))
                               (map #(assoc % :cost-per-unit (read-string (:cost-per-unit %))))
 
                               (map #(assoc % :cost-value-local (* (:quantity %) (:cost-per-unit %))))
@@ -39,7 +39,7 @@
                         )
         positions-final nil
         ]
-    positions-alloc
+    positions-clean
     )
   )
 
