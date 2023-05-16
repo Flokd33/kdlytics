@@ -6,7 +6,8 @@
     )
   )
 
-;------------------------------------------------POSITIONS-------------------------------------------------------
+;TODO handle cash, remove from ticker list for market data and add back after
+
 (defn get-clean-positions []
   (let [raw-positions (t/import-txt "positions.csv")
         yahoo-snapshot-data (group-by :ticker (mdata/get-yahoo-snapshot-data (map :ticker raw-positions)))
@@ -30,25 +31,52 @@
                               (map #(assoc % :pnl-eur (* (:pnl-local %) (:fx (first (fx-data (str (:currency %) "EUR=x")))) )))
                               (map #(assoc % :pnl-eur-perc (* (:pnl-local-perc %) (:fx (first (fx-data (str (:currency %) "EUR=x"))))))))
         nav-eur (reduce + (map :nav-eur positions-clean))
+        allocation-count (into {}
+                           (for [strat (keys static/allocation-model)]
+                           [strat (count (filter #(= % strat) (concat (map :strategy-3 positions-clean) (map :strategy-2 positions-clean) (map :strategy-1 positions-clean))))]))
         positions-alloc (->>  positions-clean
-                              (map #(assoc % :alloc-strat-1 (if (= (:strategy-1 %) "") 0 (* nav-eur (/ 100 (static/allocation-model (:strategy-1 %)))))))
-                              (map #(assoc % :alloc-strat-2 (if (= (:strategy-2 %) "") 0 (* nav-eur (/ 100 (static/allocation-model (:strategy-2 %)))))))
-                              (map #(assoc % :alloc-strat-3 (if (= (:strategy-3 %) "") 0 (* nav-eur (/ 100 (static/allocation-model (:strategy-3 %)))))))
+                              (map #(assoc % :nav-eur-perc (/ (:nav-eur %) nav-eur )))
+                              (map #(assoc % :alloc-strat-1 (if (= (:strategy-1 %) "") 0 (/ (* nav-eur (/ (static/allocation-model (:strategy-1 %)) 100)) (allocation-count (:strategy-1 %))))))
+                              (map #(assoc % :alloc-strat-2 (if (= (:strategy-2 %) "") 0 (/ (* nav-eur (/ (static/allocation-model (:strategy-2 %)) 100 )) (allocation-count (:strategy-2 %))))))
+                              (map #(assoc % :alloc-strat-3 (if (= (:strategy-3 %) "") 0 (/ (* nav-eur (/ (static/allocation-model (:strategy-3 %)) 100 )) (allocation-count (:strategy-3 %))))))
                               (map #(assoc % :alloc-strat-total (+ (:alloc-strat-1 %) (:alloc-strat-2 %) (:alloc-strat-3 %))))
                               (map #(assoc % :alloc-strat-delta (- (:alloc-strat-total %) (:nav-eur %))))
-                        )
-        positions-final nil
-        ]
-    positions-clean
+                        )]
+    positions-alloc
     )
   )
 
-;------------------------------------------------POSITIONS ANALYTICS-------------------------------------------------------
+(defn get-clean-positions-with-analytics []
+  (let [clean-positions (get-clean-positions)
+        top10 (map #(select-keys % [:nav-eur-perc :nav-eur :ticker]) (take 10 (reverse (sort-by :nav-eur-perc clean-positions))))
+        characteristics [{:metric "nav-eur" :value (reduce + (map :nav-eur clean-positions))}
+                         {:metric "count-x-cash" :value (count (t/chainfilter {:strategy-1 #(not (= % "CASH"))} clean-positions))}
+                         {:metric "count-etf" :value (count (t/chainfilter {:asset-class #(= % "ETF")} clean-positions))}
+                         {:metric "top10-weight" :value (reduce + (map :nav-eur-perc top10))}
+                         {:metric "cash" :value (reduce + (map :nav-eur-perc (t/chainfilter {:strategy-1 #(= % "CASH")} clean-positions)))}
+                         {:metric "div" :value (reduce + (map #(* (:nav-eur-perc %) (:dividendYield %)) clean-positions))}
+                         {:metric "fpe" :value (reduce + (map #(* (:nav-eur-perc %) (:forwardPE %)) clean-positions))}
+                         {:metric "pb" :value (reduce + (map #(* (:nav-eur-perc %) (:priceToBook %)) clean-positions))}
+                         {:metric "beta" :value (reduce + (map #(* (:nav-eur-perc %) (:beta %)) clean-positions))}
+                         ]
+        strategy-allocation nil
+        sector-allocation nil
+        ]
+    [clean-positions top10 characteristics strategy-allocation sector-allocation]
+    ))
+
+
 
 ;characteristics => ~holdinds, total EUR nav, total pnl EUR, PE, PB, Dyield
 ;per strat/sector/mktcap
 
 
+
+;-----------------------------------------------all needed---------------
+
+;get clean postions
+;get-positons analytics using the previous
+;refresh atom with the 2
 
 
 
