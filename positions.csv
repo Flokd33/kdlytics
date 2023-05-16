@@ -1,4 +1,4 @@
-ticker,cost-per-unit,quantity,strategy-1,strategy-2,strategy-3
+ticker,cost-per-unit,quantity,strategy-3,strategy-2,strategy-1
 BP.L,470,10,,,IQ
 IMB.L,1800,10,,,IQ
 BATS.L,2700,10,,,IQ
