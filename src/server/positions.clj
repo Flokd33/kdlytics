@@ -60,13 +60,10 @@
                          {:metric "pb" :value (reduce + (map #(* (:nav-eur-perc %) (:priceToBook %)) clean-positions))}
                          {:metric "beta" :value (reduce + (map #(* (:nav-eur-perc %) (:beta %)) clean-positions))}
                          ]
-        allocation-strategy-1 (for [strat (group-by :strategy-1 clean-positions)] {:strategy-1 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
-        allocation-strategy-2 (for [strat (group-by :strategy-2 clean-positions)] {:strategy-2 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
-        allocation-strategy-3 (for [strat (group-by :strategy-3 clean-positions)] {:strategy-3 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
-
+        exposure-strategy-1 (for [strat (group-by :strategy-1 clean-positions)] {:strategy-1 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
         ;TODO allocation total strat 123, kinda weight / count of strat, for each strat
         ]
-    [clean-positions top10 characteristics allocation-strategy-1]
+    [clean-positions top10 characteristics exposure-strategy-1]
     ))
 
 
