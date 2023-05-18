@@ -21,6 +21,7 @@
         positions-clean (->>  positions-with-market-data
                               (map #(assoc % :quantity (read-string (:quantity %))))
                               (map #(assoc % :cost-per-unit (read-string (:cost-per-unit %))))
+                              (map #(assoc % :nb-strategies  1))
 
                               (map #(assoc % :cost-value-local (* (:quantity %) (:cost-per-unit %))))
                               (map #(assoc % :nav-local (* (:quantity %) (:regularMarketPrice %))))
@@ -59,12 +60,14 @@
                          {:metric "pb" :value (reduce + (map #(* (:nav-eur-perc %) (:priceToBook %)) clean-positions))}
                          {:metric "beta" :value (reduce + (map #(* (:nav-eur-perc %) (:beta %)) clean-positions))}
                          ]
-        strategy-allocation nil
-        sector-allocation nil
-        ]
-    [clean-positions top10 characteristics strategy-allocation sector-allocation]
-    ))
+        allocation-strategy-1 (for [strat (group-by :strategy-1 clean-positions)] {:strategy-1 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
+        allocation-strategy-2 (for [strat (group-by :strategy-2 clean-positions)] {:strategy-2 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
+        allocation-strategy-3 (for [strat (group-by :strategy-3 clean-positions)] {:strategy-3 (key strat) :nav-eur-perc (reduce + (map :nav-eur-perc (val strat)))})
 
+        ;TODO allocation total strat 123, kinda weight / count of strat, for each strat
+        ]
+    [clean-positions top10 characteristics allocation-strategy-1]
+    ))
 
 
 ;characteristics => ~holdinds, total EUR nav, total pnl EUR, PE, PB, Dyield
