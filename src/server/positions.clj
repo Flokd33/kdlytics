@@ -47,6 +47,10 @@
     )
   )
 
+;(get top-10 )
+;...
+
+
 (defn get-clean-positions-with-analytics []
   (let [clean-positions (get-clean-positions)
         top10 (map #(select-keys % [:nav-eur-perc :nav-eur :ticker]) (take 10 (reverse (sort-by :nav-eur-perc clean-positions))))
@@ -66,16 +70,10 @@
     [clean-positions top10 characteristics exposure-strategy-1]
     ))
 
-
-;characteristics => ~holdinds, total EUR nav, total pnl EUR, PE, PB, Dyield
-;per strat/sector/mktcap
-
-
-
 ;-----------------------------------------------all needed---------------
 
 ;get clean postions
-;get-positons analytics using the previous
+;get-positons analytics using clean postions
 ;refresh atom with the 2
 
 
