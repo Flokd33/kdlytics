@@ -6,7 +6,14 @@
     )
   )
 
+
 ;TODO handle cash, remove from ticker list for market data and add back after
+
+(def positions (atom nil))
+(def top10 (atom nil))
+(def characteristics (atom nil))
+(def strategy-exposure (atom nil))
+
 ;-------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------GET POSITIONS---------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------
@@ -69,15 +76,19 @@
                                     (reduce + (map :nav-eur-perc-per-strat (t/chainfilter {:strategy-2 #(= % strat)} clean-positions)))
                                     (reduce + (map :nav-eur-perc-per-strat (t/chainfilter {:strategy-3 #(= % strat)} clean-positions))))}))
 
-;-----------------------------------------------all needed---------------
+;-------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------RUN-------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------------------------------------------------
 
-;get clean postions
-;get-positons analytics using clean postions
-;refresh atom with the 2
-
-
-
-
-
-
-
+(defn run-positions! []
+  (let [clean-positions (get-clean-positions)
+        top10_s (get-top-10 clean-positions)
+        characteristics_s (get-characteristics clean-positions)
+        strategy-exposure_s (get-strategy-exposure clean-positions)
+        ]
+    (reset! positions clean-positions)
+    (reset! top10 top10_s)
+    (reset! characteristics characteristics_s)
+    (reset! strategy-exposure strategy-exposure_s)
+    )
+  )
