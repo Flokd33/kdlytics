@@ -1,0 +1,3 @@
+ore,name,date,transaction,ccy,quantity,price,spot_usd
+GOLD,Full Sovereign,2022-01-01,Buy,GBP,1,1600,2000
+SILVER,1kg StoneX,2022-01-01,Buy,EUR,1,800,25
