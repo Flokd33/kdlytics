@@ -3,6 +3,8 @@
     [server.tools :as t])
   )
 
+(def vault-summary (atom nil))
+
 ;TODO do we create a PNL/transaction summary AND a inventory ? I think Yes
 (defn get-vault-summary []
   (let [raw-data (t/import-txt "vault.csv")
@@ -14,9 +16,10 @@
                          ;add premium
                          ;add current market value
                          ;add pnl
+                         )]
+    clean-data))
 
-                         )
 
-        ])
-
+(defn refresh-vault-data! []
+  (reset! vault-summary (get-vault-summary))
   )

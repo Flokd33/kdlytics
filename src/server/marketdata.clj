@@ -16,7 +16,6 @@
 (def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true")
 (def query-tail-price "?modules=price")
 
-
 (defn get-yahoo-last-price [list-ticker]
   "Extract latest price from yahoo finance - used for FX and metals"
   (let [fx-data (flatten
@@ -71,6 +70,12 @@
   )
 
 
+;------------------------------------------------FX/COMMODITIES REFRESH-----------------------------------
+(def fx-data (atom nil))
+(def commodities-data (atom nil))
+
+(defn refresh-fx-data! [] (reset! fx-data (get-yahoo-last-price static/list-fx)))
+(defn refresh-commodities-data! [] (reset! commodities-data (get-yahoo-last-price static/list-commodities)))
 
 
 

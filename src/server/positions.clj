@@ -6,7 +6,7 @@
     )
   )
 
-(def positions (atom nil))
+(def positions-summary (atom nil))
 (def top10 (atom nil))
 (def characteristics (atom nil))
 (def strategy-exposure (atom nil))
@@ -83,12 +83,12 @@
 ;---------------------------------------------------------------RUN-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------
 
-(defn run-positions! []
+(defn refresh-positions-data! []
   (let [clean-positions (get-clean-positions)
         top10_data (get-top-10 clean-positions)
         characteristics_data (get-characteristics clean-positions)
         strategy-exposure_data (get-strategy-exposure clean-positions)]
-    (reset! positions clean-positions)
+    (reset! positions-summary clean-positions)
     (reset! top10 top10_data)
     (reset! characteristics characteristics_data)
     (reset! strategy-exposure strategy-exposure_data)
