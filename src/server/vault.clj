@@ -21,5 +21,4 @@
 
 
 (defn refresh-vault-data! []
-  (reset! vault-summary (get-vault-summary))
-  )
+  (reset! vault-summary (get-vault-summary)))
