@@ -14,6 +14,4 @@
     clean-data))
 
 
-(defn refresh-cellar-data! []
-  (reset! cellar-summary (get-cellar-summary))
-  )
+(defn refresh-cellar-data! [] (reset! cellar-summary (get-cellar-summary)))
