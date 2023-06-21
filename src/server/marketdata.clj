@@ -22,7 +22,7 @@
                   (for [ticker list-ticker]
                     (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")]
                       (into {}
-                            {:ticker ticker :fx (get results "raw")}))))
+                            {:ticker ticker :value (get results "raw")}))))
         ]
     fx-data
     )

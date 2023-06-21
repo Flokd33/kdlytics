@@ -13,7 +13,7 @@
         bank-summary (->>  raw-data
                          (map #(assoc % :value (read-string (:value %))))
                          (map #(assoc % :value-eur (if (= (:ccy %) "GBP")
-                                                     (* (:value %) (:fx (first (t/chainfilter {:ticker "GBPEUR=x"} raw-fx))))
+                                                     (* (:value %) (:value (first (t/chainfilter {:ticker "GBPEUR=x"} raw-fx))))
                                                      (:value %)
                                                      ))))]
     bank-summary))

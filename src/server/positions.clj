@@ -20,9 +20,9 @@
         yahoo-snapshot-data (group-by :ticker (mdata/get-yahoo-snapshot-data (map :ticker raw-positions-x-cash)))
         fx-data-raw (mdata/get-yahoo-last-price static/list-fx)
         fx-data (->> fx-data-raw
-                      (concat [{:ticker "GBpGBP=x" :fx 0.01}
-                               {:ticker "GBpEUR=x" :fx (* (:fx (first (t/chainfilter {:ticker "GBPEUR=x"} fx-data-raw))) 0.01)}
-                               {:ticker "EUREUR=x" :fx 1}])
+                      (concat [{:ticker "GBpGBP=x" :value 0.01}
+                               {:ticker "GBpEUR=x" :value (* (:value (first (t/chainfilter {:ticker "GBPEUR=x"} fx-data-raw))) 0.01)}
+                               {:ticker "EUREUR=x" :value 1}])
                       (group-by :ticker))
         positions-with-market-data (for [p raw-positions] (merge p (first (yahoo-snapshot-data (:ticker p)))))
         positions-with-market-data-and-cash (for [pos positions-with-market-data]
@@ -42,9 +42,9 @@
                               (map #(assoc % :pnl-local (- (:nav-local %) (:cost-value-local %))))
                               (map #(assoc % :pnl-local-perc (/ (:pnl-local %) (:cost-value-local %))))
 
-                              (map #(assoc % :nav-eur (* (:nav-local %) (:fx (first (fx-data (str (:currency %) "EUR=x")))) )))
-                              (map #(assoc % :pnl-eur (* (:pnl-local %) (:fx (first (fx-data (str (:currency %) "EUR=x")))) )))
-                              (map #(assoc % :pnl-eur-perc (* (:pnl-local-perc %) (:fx (first (fx-data (str (:currency %) "EUR=x"))))))))
+                              (map #(assoc % :nav-eur (* (:nav-local %) (:value (first (fx-data (str (:currency %) "EUR=x")))) )))
+                              (map #(assoc % :pnl-eur (* (:pnl-local %) (:value (first (fx-data (str (:currency %) "EUR=x")))) )))
+                              (map #(assoc % :pnl-eur-perc (* (:pnl-local-perc %) (:value (first (fx-data (str (:currency %) "EUR=x"))))))))
         nav-eur (reduce + (map :nav-eur positions-clean))
         allocation-count (into {}
                            (for [strat (keys static/allocation-model)]
