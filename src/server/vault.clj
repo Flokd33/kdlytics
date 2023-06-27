@@ -25,14 +25,13 @@
                          ;(map #(assoc % :fine_weight_oz (* (:price %) (:quantity %)))) ;from catalogue
                          (map #(assoc % :cost_eur (if (= (:ccy %) "EUR")
                                                     (:cost %)
-                                                    (* (:cost %) (:value (first ((str (:ccy %) "EUR=x") fx-data)))))))
+                                                    (* (:cost %) (:value (first (fx-data (str (:ccy %) "EUR=x"))))))))
                          ;premium
-
-                         (map #(assoc % :market_value_usd (* (:fine_weight_oz %) (:value (first (market-data (:ore_code %)))))))
-                         (map #(assoc % :market_value_eur (/ (:market_value_usd %) (:value (first (fx-data "USDEUR=x"))))))
-
-                         (map #(assoc % :pnl_eur (- (:market_value_eur %) (:cost_eur %))))
-                         (map #(assoc % :pnl_eur_perc (- (:market_value_eur %) (:cost_eur %))))
+                         ;(map #(assoc % :market_value_usd (* (:fine_weight_oz %) (:value (first (market-data (:ore_code %)))))))
+                         ;(map #(assoc % :market_value_eur (/ (:market_value_usd %) (:value (first (fx-data "USDEUR=x"))))))
+                         ;
+                         ;(map #(assoc % :pnl_eur (- (:market_value_eur %) (:cost_eur %))))
+                         ;(map #(assoc % :pnl_eur_perc (- (:market_value_eur %) (:cost_eur %))))
 
                          )]
     clean-data))
