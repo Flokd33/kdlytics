@@ -11,9 +11,12 @@
 ;certainly the best and easiest way to get prices and basic stats but not for fundamental/valuation metrics
 ;https://github.com/dakrone/clj-http
 ;(slurp) will return the html content of a http.. basically the body of the http/get answer
+;Yahoo Finance API seems to be deprecated, V10 out of the game, V7 as well, V6 still here but need to query module by module... we need alternative solution
+;https://www.reddit.com/r/GnuCash/comments/1385t2m/looks_like_yahoo_json_just_broke/
+;https://www.reddit.com/r/sheets/comments/14yjyqg/yfinance_yahoo_link_does_not_work/
 
-(def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/")
-(def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true")
+(def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/") ;v10 stopped working, V6 works but cannot request all modules together
+(def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true") ;this was for v10, where we were requesting multiple modules at once
 (def query-tail-price "?modules=price")
 
 (defn get-yahoo-last-price [list-ticker]
