@@ -15,11 +15,11 @@
 ;https://www.reddit.com/r/GnuCash/comments/1385t2m/looks_like_yahoo_json_just_broke/
 ;https://www.reddit.com/r/sheets/comments/14yjyqg/yfinance_yahoo_link_does_not_work/
 
-(def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/") ;v10 stopped working, V6 works but cannot request all modules together
+(def query-head-snapshot "https://query2.finance.yahoo.com/v6/finance/quoteSummary/") ;v10 stopped working, V6 works but cannot request all modules together
 (def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true") ;this was for v10, where we were requesting multiple modules at once
 (def query-tail-price "?modules=price")
 
-(defn get-yahoo-last-price [list-ticker]
+(defn get-yahoo-last-price [list-ticker]                    ;price non adjusted
   "Extract latest price from yahoo finance - used for FX and metals"
   (let [fx-data (flatten
                   (for [ticker list-ticker]
@@ -72,6 +72,16 @@
   "Get economic data from FRED API"
   )
 
+
+;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
+
+(def key-test "ZMGQ4U17GVTUOR7V")
+(def ticker "TTE.PA")
+(def data-type "json")                                      ;or csv
+(def endpoint (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
+(def endpoint-p (str "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type  ))
+
+;(get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")
 
 ;------------------------------------------------FX/COMMODITIES REFRESH-----------------------------------
 (def fx-data (atom nil))
