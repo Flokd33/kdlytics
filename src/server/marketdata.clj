@@ -71,8 +71,8 @@
 (defn get-fred-macro-data []
   "Get economic data from FRED API"
   )
-
-
+;--------------------------------------------DATA FROM YH Finance-------------------------
+;(slurp "https://yfapi.net/v11/finance/quoteSummary/TTE.PA?lang=en&region=US&modules=defaultKeyStatistics%2CassetProfile")
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
 ;use for overview and last price aj = unadj
 
