@@ -16,8 +16,9 @@
 ;https://www.reddit.com/r/sheets/comments/14yjyqg/yfinance_yahoo_link_does_not_work/
 
 (def query-head-snapshot "https://query2.finance.yahoo.com/v6/finance/quoteSummary/") ;v10 stopped working, V6 works but cannot request all modules together
-(def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2CsummaryDetail%2Cprice&ssl=true") ;this was for v10, where we were requesting multiple modules at once
+(def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2Cprice&ssl=true") ;this was for v10, where we were requesting multiple modules at once
 (def query-tail-price "?modules=price")
+(def list-modules ["defaultKeyStatistics" "summaryDetail" "price"])
 
 (defn get-yahoo-last-price [list-ticker]                    ;price non adjusted
   "Extract latest price from yahoo finance - used for FX and metals"
@@ -31,11 +32,34 @@
     )
   )
 
+;(defn get-yahoo-snapshot-data-old [list-tickers]
+;  "Extract snapshot data from yahoo finance for a list of tickers...static data, key stats and last price"
+;  (let [snapshot-data-raw (flatten
+;                            (for [ticker list-tickers]
+;                              (let [raw-result (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-snapshot))) ["quoteSummary" "result"])
+;                                    result-clean (into {} (flatten (for [module raw-result] (vals module))))]
+;                                (for [field static/list-field-snapshot]
+;                                  (let [field-value (get result-clean field)]
+;                                    (into {}
+;                                          {:ticker ticker
+;                                           (keyword field) (if (or (= field "shortName") (= field "currency"))
+;                                                             field-value
+;                                                             (get field-value "raw"))}))))))
+;
+;
+;        snapshot-data-clean (let [data-grouped (group-by :ticker snapshot-data-raw)]
+;                              (for [ticker list-tickers]
+;                                (assoc (into {} (map #(second %) (data-grouped ticker))) :ticker ticker)))
+;        ]
+;    snapshot-data-clean
+;    )
+;  )
+
 (defn get-yahoo-snapshot-data [list-tickers]
   "Extract snapshot data from yahoo finance for a list of tickers...static data, key stats and last price"
   (let [snapshot-data-raw (flatten
                             (for [ticker list-tickers]
-                              (let [raw-result (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-snapshot))) ["quoteSummary" "result"])
+                              (let [raw-result (flatten (for [module list-modules] (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker "?modules=" module))) ["quoteSummary" "result"])))
                                     result-clean (into {} (flatten (for [module raw-result] (vals module))))]
                                 (for [field static/list-field-snapshot]
                                   (let [field-value (get result-clean field)]
@@ -43,9 +67,8 @@
                                           {:ticker ticker
                                            (keyword field) (if (or (= field "shortName") (= field "currency"))
                                                              field-value
-                                                             (get field-value "raw"))}))))))
-
-
+                                                             (get field-value "raw"))})))
+                                )))
         snapshot-data-clean (let [data-grouped (group-by :ticker snapshot-data-raw)]
                               (for [ticker list-tickers]
                                 (assoc (into {} (map #(second %) (data-grouped ticker))) :ticker ticker)))
@@ -73,14 +96,17 @@
   )
 ;--------------------------------------------DATA FROM YH Finance-------------------------
 ;(slurp "https://yfapi.net/v11/finance/quoteSummary/TTE.PA?lang=en&region=US&modules=defaultKeyStatistics%2CassetProfile")
+;--------------------------------------------DATA FROM Twelve data-------------------------
+;(slurp (str "https://api.twelvedata.com/time_series?symbol=TTE&interval=1day&start_date=2020-01-01&end_date=2023-08-04&apikey=" "91a4fbe402b8435f990103bbc1cb82b5"))
+;adjusted prices but nothing for EURONEXT, at least for free..
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
-;use for overview and last price aj = unadj
+;use for overview and last price where aj = unadj
 
 (def key-test "ZMGQ4U17GVTUOR7V")
-(def ticker "TTE.PA")
+(def ticker "TTE")
 (def data-type "json")                                      ;or csv
-(def endpoint (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
-(def endpoint-p (str "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type  )) ;adjusted price requires PREMIUM...
+(def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
+(def endpoint-timeseries (str "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type)) ;adjusted price requires PREMIUM...
 
 ;(get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")
 
