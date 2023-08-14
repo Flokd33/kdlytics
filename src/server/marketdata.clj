@@ -78,7 +78,7 @@
   )
 
 
-(defn get-yahoo-price-history [ticker period start-date]    ;use close not adj close...
+(defn get-yahoo-price-history [ticker period start-date]    ;use close not adj close..., not working anymore
   "Get historical price data from Yahoo finance for a given ticker - period is one of 1m, 5m, 15m, 30m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo - start-date format is YYYY-MM-DD "
   (let [list-field ["date" "open" "high" "low" "close" "adj-close" "volume"]
         start-date-unix (int (/ (.getTime (read-string (str "#inst \"" start-date "\"" ))) 1000)) ;(.getTime #inst"1988-07-04T00:00:00.000-00:00")
@@ -100,7 +100,7 @@
 ;(slurp (str "https://api.twelvedata.com/time_series?symbol=TTE&interval=1day&start_date=2020-01-01&end_date=2023-08-04&apikey=" "91a4fbe402b8435f990103bbc1cb82b5"))
 ;adjusted prices but nothing for EURONEXT, at least for free..
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
-;use for overview and last price where aj = unadj
+;can be used for overview and last price where aj = unadj
 
 (def key-test "ZMGQ4U17GVTUOR7V")
 (def ticker "TTE")
