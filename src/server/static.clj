@@ -7,10 +7,10 @@
                           "beta" "priceToBook" "forwardPE" "trailingPE" "enterpriseToEbitda" "payoutRatio" "dividendYield"  "fiveYearAvgDividendYield" "lastDividendValue" ;
                            "trailingEps" "forwardEps" "bookValue" "profitMargins"])
 (def allocation-model {"IQ" 40
-                       "CACXSTATE" 20
+                       "CACx" 20
                        "M&M" 10
                        "EM" 10
-                       "SEMICONDUCTORS" 10
+                       "SEMICOND" 10
                        "DRONE" 5
                        "CASH" 5
                        })
