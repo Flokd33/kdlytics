@@ -75,17 +75,23 @@
 (defn gpp [data] (pb {:encoding :json-post :data data}))
 
 ;-------------------------------------------------API CALLS-------------------------------------------------------------
-
+;(defn get-wealth-summary    [req] (gpt @wealth/wealth-summary))
 (defn get-positions-summary [req] (gpt @positions/positions-summary))
-(defn get-bank-summary [req] (gpt @bank/bank-summary))
-(defn get-vault-summary [req] (gpt @vault/vault-summary))
-(defn get-cellar-summary [req] (gpt @cellar/cellar-summary))
+(defn get-bank-summary      [req] (gpt @bank/bank-summary))
+(defn get-vault-summary     [req] (gpt @vault/vault-summary))
+(defn get-cellar-summary    [req] (gpt @cellar/cellar-summary))
+(defn get-price-history     [req] (gpt (marketdata/get-yahoo-price-history (:ticker (:params req)) "1wk" "2002-01-01")))
 
 (defroutes app-routes
+           ;(GET "/wealth-summary"                               [] get-wealth-summary)
            (GET "/positions-summary"                            [] get-positions-summary)
            (GET "/bank-summary"                                 [] get-bank-summary)
            (GET "/vault-summary"                                [] get-vault-summary)
            (GET "/cellar-summary"                               [] get-cellar-summary)
+
+           (GET "/price-history"                                [] get-price-history)
+
+
            ;(POST "/quant-model-save-new-bond"       [] post-quant-model-save-new-bond!)
            (route/not-found print-request)
            )

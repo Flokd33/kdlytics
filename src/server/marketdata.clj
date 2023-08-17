@@ -2,7 +2,7 @@
   (:require
     [server.static :as static]
     [cheshire.core :as cheshire]
-    )
+    [server.tools :as t])
   )
 ;(:import java.time.LocalDate)
 ;(LocalDate/parse "2019-01-01")
@@ -20,7 +20,7 @@
 (def query-tail-price "?modules=price")
 (def list-modules ["defaultKeyStatistics" "summaryDetail" "price"])
 
-(defn get-yahoo-last-price [list-ticker]                    ;price non adjusted
+(defn get-yahoo-last-price [list-ticker]
   "Extract latest price from yahoo finance - used for FX and metals"
   (let [fx-data (flatten
                   (for [ticker list-ticker]
@@ -77,19 +77,28 @@
     )
   )
 
+;(defn add-linear-regression [data field]
+;(let [date-as-integer (map #(assoc % :date (read-string (str (subs (% :date) 0 4) (subs (% :date) 5 7) (subs (% :date) 8 9)))) data)
+;
+;      ]
+;  ))
 
-(defn get-yahoo-price-history [ticker period start-date]    ;use close not adj close..., not working anymore
+(defn get-yahoo-price-history [ticker period start-date]    ;use close not adj close..., not working anymore, close looks like and adj close
   "Get historical price data from Yahoo finance for a given ticker - period is one of 1m, 5m, 15m, 30m, 90m, 1h, 1d, 5d, 1wk, 1mo, 3mo - start-date format is YYYY-MM-DD "
-  (let [list-field ["date" "open" "high" "low" "close" "adj-close" "volume"]
+  (let [list-field ["date"  "close"]                        ;["date" "open" "high" "low" "close" "adj-close" "volume"]
         start-date-unix (int (/ (.getTime (read-string (str "#inst \"" start-date "\"" ))) 1000)) ;(.getTime #inst"1988-07-04T00:00:00.000-00:00")
         end-date-unix (int (/ (.getTime (java.util.Date.)) 1000))
         query-head "https://query1.finance.yahoo.com/v7/finance/download/"
         query-tail (str "?period1=" start-date-unix "&period2=" end-date-unix "&interval=" period "&events=history")
         raw-results (slurp (str query-head ticker query-tail))
         clean-results (for [line (clojure.string/split-lines raw-results)] (for [word (clojure.string/split line #",")] (clojure.string/trim word)))
-        historical-price-data (map #(zipmap (map keyword list-field) %) (rest clean-results)) ;instead of list field we can use keyword of first results with fct below  ;;;;;;;;;;; (clojure.string/join "" (filter #(not (clojure.string/blank? %)) (clojure.string/split " AAAA TTT " #" "))) ;;;;;;;;;;
+        cleaner-results (map #(zipmap (map keyword list-field) %) (rest clean-results)) ;instead of list field we can use keyword of first results with fct below  ;;;;;;;;;;; (clojure.string/join "" (filter #(not (clojure.string/blank? %)) (clojure.string/split " AAAA TTT " #" "))) ;;;;;;;;;;
+        remove-nulls (filter #(not (= (:close %) "null")) cleaner-results)
+        reformat-results (map #(assoc % :close (clojure.core/read-string (:close %))) remove-nulls)
+        ;final-data (map #(select-keys % [:date :close]) reformat-results)
+        ;final-data-with-regression (add-linear-regression reformat-results :close)
         ]
-    historical-price-data))
+    reformat-results))
 
 (defn get-fred-macro-data []
   "Get economic data from FRED API"
@@ -102,11 +111,11 @@
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
 ;can be used for overview and last price where aj = unadj
 
-(def key-test "ZMGQ4U17GVTUOR7V")
-(def ticker "TTE")
-(def data-type "json")                                      ;or csv
-(def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
-(def endpoint-timeseries (str "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type)) ;adjusted price requires PREMIUM...
+;(def key-test "ZMGQ4U17GVTUOR7V")
+;(def ticker "TTE")
+;(def data-type "json")                                      ;or csv
+;(def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
+;(def endpoint-timeseries (str "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type)) ;adjusted price requires PREMIUM...
 
 ;(get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")
 

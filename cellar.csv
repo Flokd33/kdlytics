@@ -1,3 +1,4 @@
-name,description,quantity,cost_per_unit,market_price
-HM,Haut-Marbuzet,10,1000,1
-HS,Haut-Surget,2,1000,1
+name,type,description,quantity,cost_per_unit,market_price
+HM,red,Haut-Marbuzet,10,31,50
+HS,white,Haut-Surget,2,12,14
+YQ,sweet,Sauternes 1940,1,150,130
