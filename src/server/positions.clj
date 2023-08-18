@@ -7,9 +7,9 @@
   )
 
 (def positions-summary (atom nil))
-(def top10 (atom nil))
-(def characteristics (atom nil))
-(def strategy-exposure (atom nil))
+(def positions-top10 (atom nil))
+(def positions-characteristics (atom nil))
+(def positions-strategy-exposure (atom nil))
 
 ;-------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------GET POSITIONS---------------------------------------------------------------
@@ -89,8 +89,8 @@
         characteristics_data (get-characteristics clean-positions)
         strategy-exposure_data (get-strategy-exposure clean-positions)]
     (reset! positions-summary clean-positions)
-    (reset! top10 top10_data)
-    (reset! characteristics characteristics_data)
-    (reset! strategy-exposure strategy-exposure_data)
+    (reset! positions-top10 top10_data)
+    (reset! positions-characteristics characteristics_data)
+    (reset! positions-strategy-exposure strategy-exposure_data)
     )
   )

@@ -77,6 +77,10 @@
 ;-------------------------------------------------API CALLS-------------------------------------------------------------
 ;(defn get-wealth-summary    [req] (gpt @wealth/wealth-summary))
 (defn get-positions-summary [req] (gpt @positions/positions-summary))
+(defn get-positions-top10 [req] (gpt @positions/positions-top10))
+(defn get-positions-characteristics [req] (gpt @positions/positions-characteristics))
+(defn get-positions-strategy-exposure [req] (gpt @positions/positions-strategy-exposure))
+
 (defn get-bank-summary      [req] (gpt @bank/bank-summary))
 (defn get-vault-summary     [req] (gpt @vault/vault-summary))
 (defn get-cellar-summary    [req] (gpt @cellar/cellar-summary))
@@ -85,8 +89,14 @@
 (defroutes app-routes
            ;(GET "/wealth-summary"                               [] get-wealth-summary)
            (GET "/positions-summary"                            [] get-positions-summary)
+           (GET "/positions-top10"                              [] get-positions-top10)
+           (GET "/positions-characteristics"                    [] get-positions-characteristics)
+           (GET "/positions-strategy-exposure"                  [] get-positions-strategy-exposure)
+
            (GET "/bank-summary"                                 [] get-bank-summary)
+
            (GET "/vault-summary"                                [] get-vault-summary)
+
            (GET "/cellar-summary"                               [] get-cellar-summary)
 
            (GET "/price-history"                                [] get-price-history)
