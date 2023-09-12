@@ -10,9 +10,10 @@
                  ;CSV/JSON + TRANSIT
                  [com.cnuernber/charred "1.028"]
                  [cheshire "5.11.0"]                                ; for JSON read
-                 [metosin/jsonista "0.3.7"]                 ;for transit
-                 [com.fasterxml.jackson.core/jackson-core "2.14.0"] ;necessary for jsonista
-                 [com.fasterxml.jackson.core/jackson-databind "2.14.0"] ;necessary for jsonista
+
+                 [metosin/jsonista "0.3.7"]                               ;for transit
+                 [com.fasterxml.jackson.core/jackson-core "2.14.0"]       ;necessary for jsonista
+                 [com.fasterxml.jackson.core/jackson-databind "2.14.0"]    ;necessary for jsonista
                  [com.fasterxml.jackson.datatype/jackson-datatype-jsr310 "2.14.0"] ;necessary for jsonista
 
 
