@@ -22,13 +22,15 @@
 ;----------------------------------------------------------------------------------------------------------------------
 (defn daily-run! []
 (try
-  (println "Refreshing fx...")             (marketdata/refresh-fx-data!)
-  (println "Refreshing commodities...")    (marketdata/refresh-commodities-data!)
-  (println "Refreshing positions...")      (positions/refresh-positions-data!)
-  (println "Refreshing bank...")           (bank/refresh-bank-data!)
-  (println "Refreshing vault...")          (vault/refresh-vault-data!)
-  (println "Refreshing cellar...")         (cellar/refresh-cellar-data!)
+  (println "Refreshing fx...")             (try (marketdata/refresh-fx-data!) (catch Exception e (str "ERROR WITH: " (.getMessage e))))
+  (println "Refreshing commodities...")    (try (marketdata/refresh-commodities-data!) (catch Exception e (str "ERROR WITH: " (.getMessage e))))
+  (println "Refreshing positions...")      (try (positions/refresh-positions-data!) (catch Exception e (str "ERROR WITH: " (.getMessage e))))
+  (println "Refreshing bank...")           (try (bank/refresh-bank-data!) (catch Exception e (str "ERROR WITH: " (.getMessage e))))
+  (println "Refreshing vault...")          (try (vault/refresh-vault-data!) (catch Exception e (str "ERROR WITH: " (.getMessage e))))
+  (println "Refreshing cellar...")         (try (cellar/refresh-cellar-data!) (catch Exception e (str "ERROR WITH: " (.getMessage e))))
   ))
+
+
 ;--------------------------------------------------------SERVER SET UP-------------------------------------------------
 (def site-default
   "A default configuration for a browser-accessible website, based on current best practice."
