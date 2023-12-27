@@ -28,4 +28,5 @@
                  [http-kit "2.6.0"]                         ;webscraping + server
                  [enlive "1.1.6"]                           ;webscraping
                  ]
+  :main kdlytics.core
   :repl-options {:init-ns server.core})
