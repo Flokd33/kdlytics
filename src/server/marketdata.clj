@@ -109,13 +109,13 @@
 ;(slurp (str "https://api.twelvedata.com/time_series?symbol=TTE&interval=1day&start_date=2020-01-01&end_date=2023-08-04&apikey=" "91a4fbe402b8435f990103bbc1cb82b5"))
 ;adjusted prices but nothing for EURONEXT, at least for free..
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
-;can be used for overview and last price where aj = unadj
+;can be used for overview and last price where aj = unadj , only adjutd for Weekly
 
-;(def key-test "AHDO7I12UJI7TITY")
-;(def ticker "TTE")
-;(def data-type "json")                                      ;or csv
-;(def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
-;(def endpoint-timeseries (str "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type)) ;adjusted price requires PREMIUM...
+(def key-test "AHDO7I12UJI7TITY")
+(def ticker "TTE.PA")
+(def data-type "json")                                      ;or csv
+(def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
+(def endpoint-timeseries (str "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type)) ;adjusted price requires PREMIUM...
 
 ;(get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")
 
