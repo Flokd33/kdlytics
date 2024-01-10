@@ -111,7 +111,7 @@
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
 ;can be used for overview and last price where aj = unadj
 
-;(def key-test "ZMGQ4U17GVTUOR7V")
+;(def key-test "AHDO7I12UJI7TITY")
 ;(def ticker "TTE")
 ;(def data-type "json")                                      ;or csv
 ;(def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))

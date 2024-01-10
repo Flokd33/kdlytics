@@ -21,7 +21,6 @@
     <orderEntry type="library" name="Leiningen: cheshire:5.11.0" level="project" />
     <orderEntry type="library" name="Leiningen: clj-http:3.12.3" level="project" />
     <orderEntry type="library" name="Leiningen: clj-tuple:0.2.2" level="project" />
-    <orderEntry type="library" name="Leiningen: clojure-complete:0.2.5" level="project" />
     <orderEntry type="library" name="Leiningen: clout:2.2.1" level="project" />
     <orderEntry type="library" name="Leiningen: com.cnuernber/charred:1.028" level="project" />
     <orderEntry type="library" name="Leiningen: com.cognitect/transit-clj:1.0.329" level="project" />
@@ -48,7 +47,7 @@
     <orderEntry type="library" name="Leiningen: javax.xml.bind/jaxb-api:2.3.0" level="project" />
     <orderEntry type="library" name="Leiningen: medley:1.4.0" level="project" />
     <orderEntry type="library" name="Leiningen: metosin/jsonista:0.3.7" level="project" />
-    <orderEntry type="library" name="Leiningen: nrepl:0.6.0" level="project" />
+    <orderEntry type="library" name="Leiningen: nrepl:1.0.0" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.httpcomponents/httpasyncclient:4.1.4" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.httpcomponents/httpclient-cache:4.5.13" level="project" />
     <orderEntry type="library" name="Leiningen: org.apache.httpcomponents/httpclient:4.5.13" level="project" />
@@ -64,6 +63,7 @@
     <orderEntry type="library" name="Leiningen: org.javassist/javassist:3.18.1-GA" level="project" />
     <orderEntry type="library" name="Leiningen: org.jsoup/jsoup:1.7.2" level="project" />
     <orderEntry type="library" name="Leiningen: org.msgpack/msgpack:0.6.12" level="project" />
+    <orderEntry type="library" name="Leiningen: org.nrepl/incomplete:0.1.0" level="project" />
     <orderEntry type="library" name="Leiningen: potemkin:0.4.5" level="project" />
     <orderEntry type="library" name="Leiningen: riddley:0.1.12" level="project" />
     <orderEntry type="library" name="Leiningen: ring-cors:0.1.13" level="project" />
