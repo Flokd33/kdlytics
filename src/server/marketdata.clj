@@ -109,7 +109,7 @@
 ;(slurp (str "https://api.twelvedata.com/time_series?symbol=TTE&interval=1day&start_date=2020-01-01&end_date=2023-08-04&apikey=" "91a4fbe402b8435f990103bbc1cb82b5"))
 ;adjusted prices but nothing for EURONEXT, at least for free..
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
-;can be used for overview and last price where aj = unadj , only adjutd for Weekly
+;no daily adjusted but weekly adjusted enought
 
 (def key-test "AHDO7I12UJI7TITY")
 (def ticker "TTE.PA")
