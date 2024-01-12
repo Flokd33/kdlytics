@@ -7,7 +7,7 @@
 ;(:import java.time.LocalDate)
 ;(LocalDate/parse "2019-01-01")
 
-;----------------------------------------------EXTRACT FROM YAHOO FINANCE-----------------------------------
+;----------------------------------------------EXTRACT FROM YAHOO FINANCE-----------------------------------------------
 ;certainly the best and easiest way to get prices and basic stats but not for fundamental/valuation metrics
 ;https://github.com/dakrone/clj-http
 ;(slurp) will return the html content of a http.. basically the body of the http/get answer
@@ -99,7 +99,7 @@
         ;final-data-with-regression (add-linear-regression reformat-results :close)
         ]
     reformat-results))
-
+;-------------------------------------------------FRED?-------------------------
 (defn get-fred-macro-data []
   "Get economic data from FRED API"
   )
