@@ -15,22 +15,31 @@
 ;https://www.reddit.com/r/GnuCash/comments/1385t2m/looks_like_yahoo_json_just_broke/
 ;https://www.reddit.com/r/sheets/comments/14yjyqg/yfinance_yahoo_link_does_not_work/
 
-(def query-head-snapshot "https://query2.finance.yahoo.com/v6/finance/quoteSummary/") ;v10 stopped working, V6 works but cannot request all modules together
+(def query-head-snapshot "https://query2.finance.yahoo.com/v10/finance/quoteSummary/") ;v10 stopped working, V6 works but cannot request all modules together, now change to v10 with crumbs
+
 (def query-tail-snapshot "?modules=defaultKeyStatistics%2CsummaryDetail%2Cprice&ssl=true") ;this was for v10, where we were requesting multiple modules at once
 (def query-tail-price "?modules=price")
 (def list-modules ["defaultKeyStatistics" "summaryDetail" "price"])
+(def get-crumb
+  "7w0Ak6e2MVc"
+  ;(slurp "https://query2.finance.yahoo.com/v1/test/getcrumb")
+  )
+
 
 (defn get-yahoo-last-price [list-ticker]
   "Extract latest price from yahoo finance - used for FX and metals"
   (let [fx-data (flatten
                   (for [ticker list-ticker]
-                    (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")]
+                    (let [results (get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price "&crumb=7w0Ak6e2MVc"))) ["quoteSummary" "result"])))) "regularMarketPrice")]
                       (into {}
                             {:ticker ticker :value (get results "raw")}))))
         ]
     fx-data
     )
   )
+
+;"https://query2.finance.yahoo.com/v10/finance/quoteSummary/TTE.PA?modules=price&crumb=7w0Ak6e2MVc"
+;"https://query2.finance.yahoo.com/v1/test/getcrumb"
 
 ;(defn get-yahoo-snapshot-data-old [list-tickers]
 ;  "Extract snapshot data from yahoo finance for a list of tickers...static data, key stats and last price"
@@ -59,7 +68,7 @@
   "Extract snapshot data from yahoo finance for a list of tickers...static data, key stats and last price"
   (let [snapshot-data-raw (flatten
                             (for [ticker list-tickers]
-                              (let [raw-result (flatten (for [module list-modules] (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker "?modules=" module))) ["quoteSummary" "result"])))
+                              (let [raw-result (flatten (for [module list-modules] (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker "?modules=" module "&crumb=7w0Ak6e2MVc"))) ["quoteSummary" "result"])))
                                     result-clean (into {} (flatten (for [module raw-result] (vals module))))]
                                 (for [field static/list-field-snapshot]
                                   (let [field-value (get result-clean field)]
@@ -109,7 +118,7 @@
 ;(slurp (str "https://api.twelvedata.com/time_series?symbol=TTE&interval=1day&start_date=2020-01-01&end_date=2023-08-04&apikey=" "91a4fbe402b8435f990103bbc1cb82b5"))
 ;adjusted prices but nothing for EURONEXT, at least for free..
 ;--------------------------------------------DATA FROM ALPHAVANTAGE-------------------------
-;no daily adjusted but weekly adjusted enought!
+;no daily adjusted but weekly adjusted enough!
 
 
 (def key-test "AHDO7I12UJI7TITY")
@@ -117,7 +126,7 @@
 (def data-type "json")                                      ;or csv
 (def endpoint-overview (str "https://www.alphavantage.co/query?function=OVERVIEW&symbol=" ticker "&apikey=" key-test))
 (def endpoint-timeseries (str "https://www.alphavantage.co/query?function=TIME_SERIES_WEEKLY&symbol=" ticker "&apikey=" key-test "&datatype=" data-type)) ;adjusted price requires PREMIUM...
-
+;(slurp endpoint-timeseries)
 ;(get (first (vals (first (get-in (cheshire.core/parse-string (slurp (str query-head-snapshot ticker query-tail-price))) ["quoteSummary" "result"])))) "regularMarketPrice")
 
 ;------------------------------------------------FX/COMMODITIES REFRESH-----------------------------------
