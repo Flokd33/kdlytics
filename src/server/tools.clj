@@ -1,4 +1,10 @@
-(ns server.tools)
+(ns server.tools
+  (:require [jsonista.core :as jsonista]
+            [clojure.string]
+            )
+  )
+
+(defn json->kmap [^String s] (jsonista/read-value s (jsonista/object-mapper {:decode-key-fn true})))
 
 (defn chainfilter
   "Chain filter (boolean AND). Defaults to equality if predicate is not a function.

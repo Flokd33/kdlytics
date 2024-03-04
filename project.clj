@@ -6,10 +6,12 @@
   :dependencies [[org.clojure/clojure "1.11.1"]
                  ;[org.clojure/tools.logging "1.2.4"]        ; for logs
                  [clj-http "3.12.3"]                        ; for http request, use slurp for simple get, this for post request
+                 [metosin/jsonista "0.3.7"]
 
                  ;CSV/JSON + TRANSIT
                  [com.cnuernber/charred "1.028"]
                  [cheshire "5.11.0"]                                ; for JSON read
+
 
                  [metosin/jsonista "0.3.7"]                               ;for transit
                  [com.fasterxml.jackson.core/jackson-core "2.14.0"]       ;necessary for jsonista
@@ -28,4 +30,12 @@
                  [http-kit "2.6.0"]                         ;webscraping + server
                  [enlive "1.1.6"]                           ;webscraping
                  ]
-  :repl-options {:init-ns server.core})
+  :repl-options {:init-ns server.core}
+  ;THIS IS NEEDED AT LEAST FROM WORK TO TAKE WINDOWS SSL CERTIF
+  :jvm-opts ["-Xmx24g"
+             "--add-opens=java.base/java.nio=ALL-UNNAMED"
+             "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"
+             "-Djavax.net.ssl.trustStoreType=WINDOWS-ROOT"
+             "-Dorg.bytedeco.openblas.load=mkl_rt"
+             "--add-opens=java.base/jdk.internal.ref=ALL-UNNAMED"]
+  )
