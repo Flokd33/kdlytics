@@ -31,7 +31,7 @@
                  [enlive "1.1.6"]                           ;webscraping
                  ]
   :repl-options {:init-ns server.core}
-  ;THIS IS NEEDED AT LEAST FROM WORK TO TAKE WINDOWS SSL CERTIF
+  ;THIS IS NEEDED AT LEAST FROM WORK TO TAKE WINDOWS SSL CERTIFICATE
   :jvm-opts ["-Xmx24g"
              "--add-opens=java.base/java.nio=ALL-UNNAMED"
              "--add-opens=java.base/sun.nio.ch=ALL-UNNAMED"

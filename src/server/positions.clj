@@ -17,34 +17,35 @@
 (defn get-clean-positions []
   (let [raw-positions (t/import-txt "positions.csv")
         raw-positions-x-cash (t/chainfilter {:ticker #(not (= % "CASH"))} raw-positions)
-        yahoo-snapshot-data (group-by :ticker (mdata/get-yahoo-snapshot-data (map :ticker raw-positions-x-cash)))
+        ;yahoo-snapshot-data (group-by :ticker (mdata/get-yahoo-snapshot-data (map :ticker raw-positions-x-cash)))
+        yahoo-price-data (group-by :ticker (mdata/get-yahoo-last-price (map :ticker raw-positions-x-cash)))
+
         fx-data-raw (mdata/get-yahoo-last-price static/list-fx)
         fx-data (->> fx-data-raw
-                      (concat [{:ticker "GBpGBP=x" :value 0.01}
-                               {:ticker "GBpEUR=x" :value (* (:value (first (t/chainfilter {:ticker "GBPEUR=x"} fx-data-raw))) 0.01)}
-                               {:ticker "EUREUR=x" :value 1}])
+                      (concat [{:ticker "GBpGBP=x" :last-close-price 0.01}
+                               {:ticker "GBpEUR=x" :last-close-price (* (:last-close-price (first (t/chainfilter {:ticker "GBPEUR=x"} fx-data-raw))) 0.01)}
+                               {:ticker "EUREUR=x" :last-close-price 1}])
                       (group-by :ticker))
-        positions-with-market-data (for [p raw-positions] (merge p (first (yahoo-snapshot-data (:ticker p)))))
-        positions-with-market-data-and-cash (for [pos positions-with-market-data]
+        positions-with-market-price (for [p raw-positions] (merge p (first (yahoo-price-data (:ticker p)))))
+        positions-with-market-price-and-cash (for [pos positions-with-market-price]
                                               (if (= (:ticker pos) "CASH")
-                                                (assoc pos :trailingEps 0.0, :strategy-1 "CASH", :ytdReturn 0.0, :dividendYield 0.0, :beta 1.0,
-                                                  :fiftyTwoWeekLow 0.0, :profitMargins 0.0, :strategy-3 "", :lastDividendValue 0.0, :fiveYearAvgDividendYield 0.0,
-                                                  :enterpriseToEbitda 0.0, :priceToBook 1, :bookValue 0.0, :marketCap 0.0, :payoutRatio 0.0, :forwardPE 0.0,
-                                                  :currency (if (or (= (:account pos) "PEA") (= (:account pos) "PEAPME") (= (:account pos) "CT")) "EUR" "GBP"),
-                                                  :shortName "CASH", :fiftyTwoWeekHigh 0.0, :52WeekChange 0.0, :regularMarketPrice 1, :forwardEps 0.0, :trailingPE 0.0) pos))
-        positions-clean (->>  positions-with-market-data-and-cash
+                                                (assoc pos :shortName "CASH" :last-close-price 1
+                                                           :strategy-1 "CASH" :strategy-2 "" :strategy-3 ""
+                                                           :currency (if (or (= (:account pos) "PEA") (= (:account pos) "PEAPME") (= (:account pos) "CT")) "EUR" "GBP")
+                                                  ) pos))
+        positions-clean (->>  positions-with-market-price-and-cash
                               (map #(assoc % :quantity (read-string (:quantity %))))
                               (map #(assoc % :cost-per-unit (read-string (:cost-per-unit %))))
                               (map #(assoc % :nb-strategies (count (remove empty? [(:strategy-1 %) (:strategy-2 %) (:strategy-3 %)]))))
 
                               (map #(assoc % :cost-value-local (* (:quantity %) (:cost-per-unit %))))
-                              (map #(assoc % :nav-local (* (:quantity %) (:regularMarketPrice %))))
+                              (map #(assoc % :nav-local (* (:quantity %) (:last-close-price %))))
                               (map #(assoc % :pnl-local (- (:nav-local %) (:cost-value-local %))))
                               (map #(assoc % :pnl-local-perc (/ (:pnl-local %) (:cost-value-local %))))
 
-                              (map #(assoc % :nav-eur (* (:nav-local %) (:value (first (fx-data (str (:currency %) "EUR=x")))) )))
-                              (map #(assoc % :pnl-eur (* (:pnl-local %) (:value (first (fx-data (str (:currency %) "EUR=x")))) )))
-                              (map #(assoc % :pnl-eur-perc (* (:pnl-local-perc %) (:value (first (fx-data (str (:currency %) "EUR=x"))))))))
+                              (map #(assoc % :nav-eur (* (:nav-local %) (:last-close-price (first (fx-data (str (:currency %) "EUR=x")))) )))
+                              (map #(assoc % :pnl-eur (* (:pnl-local %) (:last-close-price (first (fx-data (str (:currency %) "EUR=x")))) )))
+                              (map #(assoc % :pnl-eur-perc (* (:pnl-local-perc %) (:last-close-price (first (fx-data (str (:currency %) "EUR=x"))))))))
         nav-eur (reduce + (map :nav-eur positions-clean))
         allocation-count (into {}
                            (for [strat (keys static/allocation-model)]
@@ -68,10 +69,11 @@
                                              {:metric "count-etf" :value (count (t/chainfilter {:asset-class #(= % "ETF")} clean-positions))}
                                              {:metric "top10-weight" :value (reduce + (map :nav-eur-perc (take 10 (reverse (sort-by :nav-eur-perc clean-positions)))))}
                                              {:metric "cash" :value (reduce + (map :nav-eur-perc (t/chainfilter {:strategy-1 #(= % "CASH")} clean-positions)))}
-                                             {:metric "div" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:dividendYield %)) 0.0 (:dividendYield %))) clean-positions))}
-                                             {:metric "fpe" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:forwardPE %)) 15 (:forwardPE %))) clean-positions))}
-                                             {:metric "pb" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:priceToBook %)) 3 (:priceToBook %))) clean-positions))}
-                                             {:metric "beta" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:beta %)) 1 (:beta %))) clean-positions))}])
+                                             ;{:metric "div" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:dividendYield %)) 0.0 (:dividendYield %))) clean-positions))}
+                                             ;{:metric "fpe" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:forwardPE %)) 15 (:forwardPE %))) clean-positions))}
+                                             ;{:metric "pb" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:priceToBook %)) 3 (:priceToBook %))) clean-positions))}
+                                             ;{:metric "beta" :value (reduce + (map #(* (:nav-eur-perc %) (if (nil? (:beta %)) 1 (:beta %))) clean-positions))}
+                                             ])
 
 (defn get-strategy-exposure [clean-positions]
   (for [strat (distinct (map :strategy-1 clean-positions))]
