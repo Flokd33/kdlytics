@@ -76,6 +76,7 @@
 
 ;-------------------------------------------------API CALLS-------------------------------------------------------------
 ;(defn get-wealth-summary    [req] (gpt @wealth/wealth-summary))
+(defn get-positions-raw [req] (gpt @positions/raw-positions))
 (defn get-positions-summary [req] (gpt @positions/positions-summary))
 (defn get-positions-top10 [req] (gpt @positions/positions-top10))
 (defn get-positions-characteristics [req] (gpt @positions/positions-characteristics))

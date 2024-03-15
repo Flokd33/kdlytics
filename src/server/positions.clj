@@ -5,7 +5,7 @@
     [server.tools :as t]
     )
   )
-
+(def positions-raw (atom nil))
 (def positions-summary (atom nil))
 (def positions-top10 (atom nil))
 (def positions-characteristics (atom nil))
@@ -14,7 +14,7 @@
 ;-------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------GET POSITIONS---------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------
-(defn get-clean-positions []
+(defn get-clean-positions [raw]
   (let [raw-positions (t/import-txt "positions.csv")
         raw-positions-x-cash (t/chainfilter {:ticker #(not (= % "CASH"))} raw-positions)
         ;yahoo-snapshot-data (group-by :ticker (mdata/get-yahoo-snapshot-data (map :ticker raw-positions-x-cash)))
@@ -82,14 +82,25 @@
                                       (reduce + (map :nav-eur-perc-per-strat (t/chainfilter {:strategy-3 #(= % strat)} clean-positions))))}))
 
 ;-------------------------------------------------------------------------------------------------------------------------------------------
+;---------------------------------------------------------------WRITE-------------------------------------------------------------------------
+;-------------------------------------------------------------------------------------------------------------------------------------------
+
+(defn write-positions-csv! [new-data]
+  "write new csv"
+  ;"positions.csv"
+  )
+
+;-------------------------------------------------------------------------------------------------------------------------------------------
 ;---------------------------------------------------------------RUN-------------------------------------------------------------------------
 ;-------------------------------------------------------------------------------------------------------------------------------------------
 
 (defn refresh-positions-data! []
-  (let [clean-positions (get-clean-positions)
+  (let [positions-csv (t/import-txt "positions.csv")
+        clean-positions (get-clean-positions positions-csv)
         top10_data (get-top-10 clean-positions)
         characteristics_data (get-characteristics clean-positions)
         strategy-exposure_data (get-strategy-exposure clean-positions)]
+    (reset! positions-raw positions-csv)
     (reset! positions-summary clean-positions)
     (reset! positions-top10 top10_data)
     (reset! positions-characteristics characteristics_data)
